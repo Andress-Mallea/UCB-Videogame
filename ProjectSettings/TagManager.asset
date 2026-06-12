@@ -11,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Ground
+  - Interactable
   - 
   - 
   - 
@@ -40,4 +40,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Fondo
+    uniqueID: 1175213139
+    locked: 0
+  - name: Medio
+    uniqueID: 984298325
+    locked: 0
+  - name: Jugador
+    uniqueID: 2368325557
+    locked: 0
+  - name: Frente
+    uniqueID: 2482409515
     locked: 0
