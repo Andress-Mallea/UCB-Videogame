@@ -1,73 +1,33 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(PlayerInput))]
+[RequireComponent(typeof(Rigidbody2D), typeof(PlayerInput), typeof(CollisionSenses))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Configuración de Movimiento")]
     [SerializeField] private float moveSpeed = 8f; 
+    [SerializeField] private float jumpForce = 4f;
+    [SerializeField] private float fallMultiplier = 2.5f;
     
     private Rigidbody2D rb;
     private PlayerInput input;
+    private CollisionSenses senses; 
     
-    // Variable para saber hacia dónde estamos mirando (asumimos que el sprite original mira a la derecha)
     private bool facingRight = true;
+    private bool canMove = true; 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         input = GetComponent<PlayerInput>();
+        senses = GetComponent<CollisionSenses>();
     }
 
-    private void FixedUpdate()
-    {
-        Move();
-    }
-
-    private void Move()
-    {  
-        if (!canMove) return;
-        // 1. Aplicar la velocidad
-        float horizontal = input.HorizontalInput;
-        rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
-
-        // 2. Verificar si necesitamos darnos la vuelta
-        // Si nos movemos a la derecha pero estamos mirando a la izquierda...
-        if (horizontal > 0 && !facingRight) 
-        {
-            Flip();
-        }
-        // O si nos movemos a la izquierda pero estamos mirando a la derecha...
-        else if (horizontal < 0 && facingRight) 
-        {
-            Flip();
-        }
-    }
-
-    private void Flip()
-    {
-        // Cambiamos el estado de la variable
-        facingRight = !facingRight;
-
-        // Tomamos la escala actual del objeto
-        Vector3 currentScale = transform.localScale;
-        
-        // Multiplicamos la escala en X por -1 (esto hace el efecto espejo perfecto)
-        currentScale.x *= -1;
-        
-        // Aplicamos la nueva escala al personaje
-        transform.localScale = currentScale;
-    }
-    // Añade esta variable al inicio de tu clase PlayerMovement
-    private bool canMove = true;
-
-    // Suscribirse a los eventos cuando el objeto se activa
     private void OnEnable()
     {
         EventManager.OnInteractionStarted += LockMovement;
         EventManager.OnInteractionEnded += UnlockMovement;
     }
 
-    // Nos desuscribimos si el jugador se destruye/desactiva
     private void OnDisable()
     {
         EventManager.OnInteractionStarted -= LockMovement;
@@ -77,13 +37,57 @@ public class PlayerMovement : MonoBehaviour
     private void LockMovement()
     {
         canMove = false;
-        rb.velocity = Vector2.zero; // Frenamos al jugador en seco
+        rb.velocity = Vector2.zero; 
     }
 
-    private void UnlockMovement()
+    private void UnlockMovement() { canMove = true; }
+
+    private void Update()
     {
-        canMove = true;
+        if (!canMove) return;
+
+        if (input.JumpPressed && senses.IsGrounded)
+        {
+            Jump();
+        }
     }
 
-  
+    private void FixedUpdate()
+    {
+        if (!canMove) return;
+
+        Move();
+        ApplyCustomGravity();
+    }
+
+    private void Move()
+    {  
+        float horizontal = input.HorizontalInput;
+        rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
+
+        if (horizontal > 0 && !facingRight) Flip();
+        else if (horizontal < 0 && facingRight) Flip();
+    }
+
+    private void Jump()
+    {
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+    }
+
+    private void ApplyCustomGravity()
+    {
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
+        }
+    }
+
+    private void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 currentScale = transform.localScale;
+        currentScale.x *= -1;
+        transform.localScale = currentScale;
+    }
 }

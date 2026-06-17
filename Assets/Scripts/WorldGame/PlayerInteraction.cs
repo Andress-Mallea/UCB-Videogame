@@ -9,56 +9,58 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private LayerMask interactableLayer; 
 
     private PlayerInput input;
-    
-    // Nuestra variable de control
     private bool canInteract = true;
+    private IInteractable currentInteractable; // Memoria del objeto actual
 
-    private void Awake()
-    {
-        input = GetComponent<PlayerInput>();
-    }
+    private void Awake() { input = GetComponent<PlayerInput>(); }
 
-    // Nos suscribimos a los eventos de la radio
     private void OnEnable()
     {
         EventManager.OnInteractionStarted += DisableInteraction;
         EventManager.OnInteractionEnded += EnableInteraction;
     }
 
-    // Nos desuscribimos si el jugador se destruye/desactiva
     private void OnDisable()
     {
         EventManager.OnInteractionStarted -= DisableInteraction;
         EventManager.OnInteractionEnded -= EnableInteraction;
     }
 
-    private void DisableInteraction()
-    {
-        canInteract = false;
-    }
-
-    private void EnableInteraction()
-    {
-        canInteract = true;
-    }
+    private void DisableInteraction() { canInteract = false; }
+    private void EnableInteraction() { canInteract = true; }
 
     private void Update()
     {
-        // Si no podemos interactuar, cortamos la ejecución aquí mismo.
-        // Ni siquiera gastamos recursos lanzando el rayo OverlapCircle.
         if (!canInteract) return;
 
         Collider2D collider = Physics2D.OverlapCircle(interactPoint.position, interactRadius, interactableLayer);
         
         if (collider != null)
         {
-            IInteractable interactable = collider.GetComponent<IInteractable>();
-            if (interactable != null)
+            IInteractable newInteractable = collider.GetComponent<IInteractable>();
+            if (newInteractable != null)
             {
+                // Encendemos el borde del nuevo objeto
+                if (newInteractable != currentInteractable)
+                {
+                    if (currentInteractable != null) currentInteractable.DesactivarBorde();
+                    currentInteractable = newInteractable;
+                    currentInteractable.ActivarBorde();
+                }
+
                 if (input.InteractPressed) 
                 {
-                    interactable.Interact();
+                    currentInteractable.Interact();
                 }
+            }
+        }
+        else
+        {
+            // Apagamos el borde si nos alejamos
+            if (currentInteractable != null)
+            {
+                currentInteractable.DesactivarBorde();
+                currentInteractable = null;
             }
         }
     }

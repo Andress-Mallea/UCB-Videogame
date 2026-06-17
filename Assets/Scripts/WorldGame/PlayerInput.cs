@@ -20,6 +20,6 @@ public class PlayerInput : MonoBehaviour
         // Detecta si se presionó la tecla "E" exclusivamente en este frame
         InteractPressed = Input.GetKeyDown(KeyCode.E);
         // GetButtonDown registra el frame exacto en que se presionó el botón de salto.
-        JumpPressed = Input.GetButtonDown("Jump");
+        JumpPressed = Input.GetKeyDown(KeyCode.Space);
     }
 }
