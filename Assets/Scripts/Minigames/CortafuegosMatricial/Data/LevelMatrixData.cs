@@ -51,7 +51,7 @@ namespace Metroidvania.Minigames.MatrixFirewall
     /// ScriptableObject que almacena toda la configuración de un nivel específico del Cortafuegos.
     /// </summary>
     [CreateAssetMenu(fileName = "New_MatrixLevel", menuName = "Minigames/Cortafuegos Matricial/Level Data", order = 1)]
-    public class LevelData_Matrix : ScriptableObject
+    public class LevelMatrixData : ScriptableObject
     {
         [Header("Información del Nivel")]
         public string levelID = "Matrix_Lvl_01";

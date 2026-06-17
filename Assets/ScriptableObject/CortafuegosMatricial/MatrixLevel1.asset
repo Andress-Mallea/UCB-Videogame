@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d8b7555846d8954c8829fc39874c08b, type: 3}
+  m_Name: MatrixLevel1
+  m_EditorClassIdentifier: 
+  levelID: Matrix_Lvl_01
+  objectiveDescription: Aplica los parches para igualar la temperatura objetivo.
+  initialMatrix:
+    rows: 2
+    columns: 2
+    values: 00000000000000000000000000000000
+  targetMatrix:
+    rows: 2
+    columns: 2
+    values: 05000000020000000800000001000000
+  availableTokens:
+  - tokenName: Parche Base
+    tokenColor: {r: 1, g: 0, b: 0, a: 0}
+    operationMatrix:
+      rows: 2
+      columns: 2
+      values: 05000000000000000400000001000000
+  - tokenName: Parche 2
+    tokenColor: {r: 1, g: 0.8844897, b: 0, a: 0}
+    operationMatrix:
+      rows: 2
+      columns: 2
+      values: 00000000020000000400000000000000
+  - tokenName: Virus
+    tokenColor: {r: 0.244683, g: 0, b: 0.51758504, a: 0}
+    operationMatrix:
+      rows: 2
+      columns: 2
+      values: 01000000010000000100000001000000
+  warmThreshold: 3
+  coldThreshold: 6
